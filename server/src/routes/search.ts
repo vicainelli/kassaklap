@@ -1,7 +1,7 @@
-import { Hono } from "hono";
 import Fuse, { type IFuseOptions } from "fuse.js";
-import supermarketsData from "../data/supermarkets.json";
+import { Hono } from "hono";
 import type { RawProductsData, ResultItem } from "shared/dist";
+import supermarketsData from "../data/supermarkets.json";
 
 export const searchRoutes = new Hono().get("/", async (c) => {
 	const query = c.req.query("q");
@@ -46,39 +46,63 @@ const FUSE_OPTIONS: IFuseOptions<RawProductsData> = {
 	minMatchCharLength: 2, // avoid matches on very short queries
 };
 
-const typedProductsData: RawProductsData[] =
-	supermarketsData as RawProductsData[];
+
+const typedProductsData: RawProductsData[] = supermarketsData as RawProductsData[];
 const fuse = new Fuse(typedProductsData, FUSE_OPTIONS);
 
+// Single Responsibility: Find market for establishment
+function getMarketForEstablishment(establishmentName: string) {
+	return ALLOWED_MARKETS.find(
+		(m) => m.code === establishmentName.toLowerCase()
+	);
+}
+
+// Single Responsibility: Get matched products from establishment for a match
+function getMatchedProducts(
+	establishment: RawProductsData,
+	match: { key?: string; value?: string }
+): Array<typeof establishment.d[0]> {
+	if (match.key !== "d.n" || !match.value) return [];
+	return establishment.d.filter((p) => p.n === match.value);
+}
+
+// Single Responsibility: Build a result item
+type Market = typeof ALLOWED_MARKETS[number];
+type Product = RawProductsData["d"][number];
+
+function buildResultItem(
+	establishment: RawProductsData,
+	product: Product,
+	market: Market
+): ResultItem {
+	return {
+		e: establishment.n,
+		n: product.n,
+		p: product.p,
+		s: product.s,
+		l: market.base_url + product.l,
+	};
+}
+
+// Orchestrator: Compose results using helpers
 function fetchSearchResults(query: string): ResultItem[] {
 	const searchResults = fuse.search(query);
 	const resultItems: ResultItem[] = [];
-	for (const result of searchResults) {
-		const establishment = result.item;
-		// Find the market object for this establishment
-		const market = ALLOWED_MARKETS.find(
-			(m) => m.code === establishment.n.toLowerCase(),
-		);
-		if (!market) continue;
-		if (result.matches) {
-			for (const match of result.matches) {
-				if (match.key === "d.n" && match.value) {
-					// Find the product in establishment.d with matching name
-					const matchedProducts = establishment.d.filter(
-						(p) => p.n === match.value,
-					);
-					for (const product of matchedProducts) {
-						resultItems.push({
-							e: establishment.n,
-							n: product.n,
-							p: product.p,
-							s: product.s,
-							l: market.base_url + product.l,
-						});
+		for (const result of searchResults) {
+			const establishment = result.item;
+			const market = getMarketForEstablishment(establishment.n);
+			if (!market) continue;
+			if (result.matches) {
+				for (const match of result.matches) {
+					// Type guard: only call helper if key and value are defined
+					if (typeof match.key === "string" && typeof match.value === "string") {
+						const matchedProducts = getMatchedProducts(establishment, match);
+						for (const product of matchedProducts) {
+							resultItems.push(buildResultItem(establishment, product, market));
+						}
 					}
 				}
 			}
 		}
-	}
 	return resultItems;
 }
