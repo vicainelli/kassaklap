@@ -3,7 +3,20 @@ import { Hono } from "hono";
 import type { RawProductsData, ResultItem } from "shared/dist";
 import supermarketsData from "../data/supermarkets.json";
 
-export const searchRoutes = new Hono().get("/", async (c) => {
+const ALLOWED_ORIGIN = "https://your-allowed-domain.com"; // Keep in sync with main app
+
+const searchRoutes = new Hono();
+
+// Origin validation middleware
+searchRoutes.use("*", async (c, next) => {
+	const origin = c.req.header("Origin");
+	if (origin && origin !== ALLOWED_ORIGIN) {
+		return c.text("Forbidden", 403);
+	}
+	await next();
+});
+
+searchRoutes.get("/", async (c) => {
 	const query = c.req.query("q");
 	if (!query) {
 		return c.json(
@@ -15,6 +28,8 @@ export const searchRoutes = new Hono().get("/", async (c) => {
 	const results = await fetchSearchResults(query);
 	return c.json(results);
 });
+
+export { searchRoutes };
 
 const ALLOWED_MARKETS = [
 	{
@@ -46,34 +61,34 @@ const FUSE_OPTIONS: IFuseOptions<RawProductsData> = {
 	minMatchCharLength: 2, // avoid matches on very short queries
 };
 
-
-const typedProductsData: RawProductsData[] = supermarketsData as RawProductsData[];
+const typedProductsData: RawProductsData[] =
+	supermarketsData as RawProductsData[];
 const fuse = new Fuse(typedProductsData, FUSE_OPTIONS);
 
 // Single Responsibility: Find market for establishment
 function getMarketForEstablishment(establishmentName: string) {
 	return ALLOWED_MARKETS.find(
-		(m) => m.code === establishmentName.toLowerCase()
+		(m) => m.code === establishmentName.toLowerCase(),
 	);
 }
 
 // Single Responsibility: Get matched products from establishment for a match
 function getMatchedProducts(
 	establishment: RawProductsData,
-	match: { key?: string; value?: string }
-): Array<typeof establishment.d[0]> {
+	match: { key?: string; value?: string },
+): Array<(typeof establishment.d)[0]> {
 	if (match.key !== "d.n" || !match.value) return [];
 	return establishment.d.filter((p) => p.n === match.value);
 }
 
 // Single Responsibility: Build a result item
-type Market = typeof ALLOWED_MARKETS[number];
+type Market = (typeof ALLOWED_MARKETS)[number];
 type Product = RawProductsData["d"][number];
 
 function buildResultItem(
 	establishment: RawProductsData,
 	product: Product,
-	market: Market
+	market: Market,
 ): ResultItem {
 	return {
 		e: establishment.n,
@@ -88,21 +103,21 @@ function buildResultItem(
 function fetchSearchResults(query: string): ResultItem[] {
 	const searchResults = fuse.search(query);
 	const resultItems: ResultItem[] = [];
-		for (const result of searchResults) {
-			const establishment = result.item;
-			const market = getMarketForEstablishment(establishment.n);
-			if (!market) continue;
-			if (result.matches) {
-				for (const match of result.matches) {
-					// Type guard: only call helper if key and value are defined
-					if (typeof match.key === "string" && typeof match.value === "string") {
-						const matchedProducts = getMatchedProducts(establishment, match);
-						for (const product of matchedProducts) {
-							resultItems.push(buildResultItem(establishment, product, market));
-						}
+	for (const result of searchResults) {
+		const establishment = result.item;
+		const market = getMarketForEstablishment(establishment.n);
+		if (!market) continue;
+		if (result.matches) {
+			for (const match of result.matches) {
+				// Type guard: only call helper if key and value are defined
+				if (typeof match.key === "string" && typeof match.value === "string") {
+					const matchedProducts = getMatchedProducts(establishment, match);
+					for (const product of matchedProducts) {
+						resultItems.push(buildResultItem(establishment, product, market));
 					}
 				}
 			}
 		}
+	}
 	return resultItems;
 }
