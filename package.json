@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"description": "A monorepo template built with Bun, Hono, Vite, and React",
 	"author": "Vinicius Cainelli",
-	"packageManager": "bun@1.2.4",
+	"packageManager": "bun@1.2.20",
 	"workspaces": [
 		"./server",
 		"./client",
@@ -21,7 +21,8 @@
 		"type-check": "turbo type-check",
 		"test": "turbo test",
 		"postinstall": "turbo build --filter=shared --filter=server",
-		"format": "biome format . --write"
+		"format": "biome format . --write",
+		"deploy": "turbo build && wrangler deploy --minify"
 	},
 	"keywords": [
 		"bun",
@@ -33,8 +34,10 @@
 	],
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.0",
+		"@cloudflare/workers-types": "^4.20250820.0",
 		"bun-types": "latest",
-		"turbo": "^2.5.5"
+		"turbo": "^2.5.6",
+		"wrangler": "^4.31.0"
 	},
 	"peerDependencies": {
 		"typescript": "^5.7.3"
