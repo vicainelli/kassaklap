@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import type { ResultItem } from "shared/dist";
 import { Input } from "./ui/input";
 
+const SERVER_URL = import.meta.env.DEV ? "http://localhost:3000/api" : "/api";
+
 // Debounce hook (SRP)
 function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState(value);
@@ -14,7 +16,9 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 async function fetchProductResults(query: string): Promise<ResultItem[]> {
-	const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+	const res = await fetch(
+		`${SERVER_URL}/search?q=${encodeURIComponent(query)}`,
+	);
 	if (!res.ok) throw new Error("Network response was not ok");
 	return res.json();
 }
