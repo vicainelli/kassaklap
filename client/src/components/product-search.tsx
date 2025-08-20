@@ -1,39 +1,39 @@
-import type React from "react";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
 import type { ResultItem } from "shared/dist";
-
 import { Input } from "./ui/input";
 
 // Debounce hook (SRP)
 function useDebounce<T>(value: T, delay: number): T {
 	const [debouncedValue, setDebouncedValue] = useState(value);
-	useEffect(() => {
+	React.useEffect(() => {
 		const handler = setTimeout(() => setDebouncedValue(value), delay);
 		return () => clearTimeout(handler);
 	}, [value, delay]);
 	return debouncedValue;
 }
 
-// Fetch search results (SRP)
-function useProductSearchResults(query: string): ResultItem[] | null {
-	const [results, setResults] = useState<ResultItem[] | null>(null);
-	useEffect(() => {
-		if (query.length >= 3) {
-			fetch(`/api/search?q=${encodeURIComponent(query)}`)
-				.then((res) => res.json())
-				.then((data) => setResults(data))
-				.catch(() => setResults(null));
-		} else {
-			setResults(null);
-		}
-	}, [query]);
-	return results;
+async function fetchProductResults(query: string): Promise<ResultItem[]> {
+	const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+	if (!res.ok) throw new Error("Network response was not ok");
+	return res.json();
 }
 
 export function ProductSearch() {
 	const [searchTerm, setSearchTerm] = useState("");
 	const debouncedSearchTerm = useDebounce(searchTerm, 600);
-	const results = useProductSearchResults(debouncedSearchTerm);
+
+	const {
+		data: results,
+		isLoading,
+		isError,
+		error,
+	} = useQuery({
+		queryKey: ["productSearch", debouncedSearchTerm],
+		queryFn: () => fetchProductResults(debouncedSearchTerm),
+		enabled: debouncedSearchTerm.length >= 3,
+		staleTime: 1000 * 60, // 1 minute cache
+	});
 
 	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) =>
 		setSearchTerm(e.target.value);
@@ -49,20 +49,30 @@ export function ProductSearch() {
 					className="w-full"
 				/>
 			</div>
-			<ResultsList results={results} />
+			<ResultsList
+				results={results}
+				isLoading={isLoading}
+				isError={isError}
+				error={error}
+			/>
 		</>
 	);
 }
 
 type ResultsListProps = {
-	results: ResultItem[] | null;
+	results: ResultItem[] | undefined;
+	isLoading: boolean;
+	isError: boolean;
+	error: unknown;
 };
 
-function ResultsList({ results }: ResultsListProps) {
-	if (!results) return <div>no results</div>;
+function ResultsList({ results, isLoading, isError, error }: ResultsListProps) {
+	if (isLoading) return <div>Loading...</div>;
+	if (isError) return <div>Error: {String(error)}</div>;
+	if (!results || results.length === 0) return <div>No results</div>;
 	return (
 		<ul className="flex flex-col gap-2">
-			{results.map((item: ResultItem, index: number) => (
+			{results.map((item, index) => (
 				// biome-ignore lint/suspicious/noArrayIndexKey: no id yet
 				<li key={index}>
 					<ResultListItem item={item} />
