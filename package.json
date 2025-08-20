@@ -1,33 +1,45 @@
 {
-  "name": "kassaklap",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "bun --hot src/index.tsx",
-    "start": "NODE_ENV=production bun src/index.tsx",
-    "build": "bun run build.ts"
-  },
-  "dependencies": {
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-select": "^2.2.6",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@types/lodash.debounce": "^4.0.9",
-    "bun-plugin-tailwind": "^0.0.15",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "fuse.js": "^7.1.0",
-    "lodash.debounce": "^4.0.8",
-    "lucide-react": "^0.525.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.12",
-    "tailwindcss-animate": "^1.0.7"
-  },
-  "devDependencies": {
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@types/bun": "latest"
-  }
+	"name": "kassaklap",
+	"version": "0.1.0",
+	"description": "A monorepo template built with Bun, Hono, Vite, and React",
+	"author": "Vinicius Cainelli",
+	"packageManager": "bun@1.2.4",
+	"workspaces": [
+		"./server",
+		"./client",
+		"./shared"
+	],
+	"scripts": {
+		"dev": "turbo dev",
+		"dev:client": "turbo dev --filter=client",
+		"dev:server": "turbo dev --filter=server",
+		"build": "turbo build",
+		"build:client": "turbo build --filter=client",
+		"build:server": "turbo build --filter=server",
+		"lint": "biome lint .",
+		"lint:fix": "biome lint . --write",
+		"type-check": "turbo type-check",
+		"test": "turbo test",
+		"postinstall": "turbo build --filter=shared --filter=server",
+		"format": "biome format . --write"
+	},
+	"keywords": [
+		"bun",
+		"hono",
+		"react",
+		"vite",
+		"monorepo",
+		"turbo"
+	],
+	"devDependencies": {
+		"@biomejs/biome": "^2.2.0",
+		"bun-types": "latest",
+		"turbo": "^2.5.5"
+	},
+	"peerDependencies": {
+		"typescript": "^5.7.3"
+	},
+	"dependencies": {
+		"hono": "^4.9.2"
+	}
 }
