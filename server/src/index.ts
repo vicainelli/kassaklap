@@ -8,17 +8,27 @@ export const app = new Hono();
 
 app.basePath("/api");
 
-const ALLOWED_ORIGIN = "https://kassaklap.nl"; // Change to your allowed domain
+const ALLOWED_ORIGINS = [
+	"https://kassaklap.nl",
+];
+
+function isAllowedOrigin(origin: string | undefined): boolean {
+	if (!origin) return false;
+	if (ALLOWED_ORIGINS.includes(origin)) return true;
+	// Match any subdomain like *.kassaklap.vicainelli-cloudflare.workers.dev
+	const regex = /^https?:\/\/[\w-]+-kassaklap\.vicainelli-cloudflare\.workers\.dev$/;
+	return regex.test(origin);
+}
 
 app.use(
 	cors({
-		origin: ALLOWED_ORIGIN,
+		origin: (origin) => isAllowedOrigin(origin) ? origin : "",
 	}),
 );
 
 app.use("*", async (c, next) => {
 	const origin = c.req.header("Origin");
-	if (origin && origin !== ALLOWED_ORIGIN) {
+	if (origin && !isAllowedOrigin(origin)) {
 		return c.text("Forbidden", 403);
 	}
 	await next();
@@ -28,7 +38,6 @@ app.use("*", logger());
 
 const apiRoutes = app
 	.basePath("/api")
-	// .get("/hello", (c) => c.json({ message: "Hello Worlds" }))
 	.route("/search", searchRoutes);
 
 export default app;
