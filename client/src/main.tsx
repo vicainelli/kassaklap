@@ -1,8 +1,25 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "./index.css";
+
+// Dynamic dark mode: sync .dark class on <body> with system preferences
+function syncDarkModeClass() {
+	const isDark =
+		window.matchMedia?.("(prefers-color-scheme: dark)")?.matches ?? false;
+	document.body.classList.toggle("dark", isDark);
+}
+
+// Initial sync
+syncDarkModeClass();
+
+// Listen for changes
+if (window.matchMedia) {
+	window
+		.matchMedia("(prefers-color-scheme: dark)")
+		.addEventListener("change", syncDarkModeClass);
+}
 
 const queryClient = new QueryClient();
 
