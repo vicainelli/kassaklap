@@ -8,21 +8,20 @@ export const app = new Hono();
 
 app.basePath("/api");
 
-const ALLOWED_ORIGINS = [
-	"https://kassaklap.nl",
-];
+const ALLOWED_ORIGINS = ["https://kassaklap.nl"];
 
 function isAllowedOrigin(origin: string | undefined): boolean {
 	if (!origin) return false;
 	if (ALLOWED_ORIGINS.includes(origin)) return true;
 	// Match any subdomain like *.kassaklap.vicainelli-cloudflare.workers.dev
-	const regex = /^https?:\/\/[\w-]+-kassaklap\.vicainelli-cloudflare\.workers\.dev$/;
+	const regex =
+		/^https?:\/\/[\w-]+-kassaklap\.vicainelli-cloudflare\.workers\.dev$/;
 	return regex.test(origin);
 }
 
 app.use(
 	cors({
-		origin: (origin) => isAllowedOrigin(origin) ? origin : "",
+		origin: (origin) => (isAllowedOrigin(origin) ? origin : ""),
 	}),
 );
 
@@ -36,9 +35,7 @@ app.use("*", async (c, next) => {
 
 app.use("*", logger());
 
-const apiRoutes = app
-	.basePath("/api")
-	.route("/search", searchRoutes);
+const apiRoutes = app.basePath("/api").route("/search", searchRoutes);
 
 export default app;
 export type ApiRoutes = typeof apiRoutes;
