@@ -1,0 +1,29 @@
+name: Update Supermarkets Data
+
+on:
+  schedule:
+    - cron: "0 8 * * *" # Every day at 8 AM
+  workflow_dispatch:
+
+jobs:
+  download-supermarkets:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Download supermarkets data
+        run: |
+          curl -fL -o server/src/data/supermarkets.json {{ secrets.SUPERMARKETS_URL }}
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.name "GitHub Actions"
+          git config --local user.email "
+
+      - uses: stefanzweifel/git-auto-commit-action@v6
+        with:
+          commit_message: "Update supermarkets data"
+          file_pattern: "server/src/data/supermarkets.json"
