@@ -16,7 +16,7 @@ jobs:
 
       - name: Download supermarkets data
         run: |
-          curl -fL -o server/src/data/supermarkets.json {{ secrets.SUPERMARKETS_URL }}
+          curl -fL -o server/src/data/supermarkets.json ${{ secrets.SUPERMARKETS_URL }}
 
       - name: Commit and push changes
         run: |
