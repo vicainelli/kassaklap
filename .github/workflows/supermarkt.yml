@@ -21,5 +21,5 @@ jobs:
       - name: Commit and push changes
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
-          commit_message: "Update supermarkets data"
+          commit_message: "chore: update supermarkets data"
           file_pattern: "server/src/data/supermarkets.json"
