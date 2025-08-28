@@ -39,8 +39,12 @@ export function ProductSearch() {
 		staleTime: 1000 * 60, // 1 minute cache
 	});
 
-	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) =>
-		setSearchTerm(e.target.value);
+	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) =>{
+  	if (typeof window !== "undefined" && (window as any).posthog) {
+  		(window as any).posthog.capture('search_product', { value: e.target.value });
+  	}
+  	setSearchTerm(e.target.value)
+	};
 
 	return (
 		<>

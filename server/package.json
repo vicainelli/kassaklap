@@ -9,7 +9,7 @@
 	},
 	"dependencies": {
 		"fuse.js": "^7.1.0",
-		"hono": "^4.9.2",
+		"hono": "^4.9.4",
 		"lodash.debounce": "^4.0.8",
 		"shared": "workspace:*"
 	},
