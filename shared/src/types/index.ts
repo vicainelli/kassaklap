@@ -26,5 +26,7 @@ export const ResultItemSchema = z.object({
 	p: z.number(), // price
 	s: z.string(), // size/serving
 	l: z.string(), // location/link
+	price_per_unit: z.number().nullable().optional(), // price per normalized unit
+	unit_type: z.string().nullable().optional(), // normalized unit type (kg, liter, unit)
 });
 export type ResultItem = z.infer<typeof ResultItemSchema>;

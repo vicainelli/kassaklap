@@ -3,18 +3,7 @@ import { Hono } from "hono";
 import type { RawProductsData, ResultItem } from "shared/dist";
 import supermarketsData from "../data/supermarkets.json";
 
-const ALLOWED_ORIGIN = "https://your-allowed-domain.com"; // Keep in sync with main app
-
 const searchRoutes = new Hono();
-
-// Origin validation middleware
-searchRoutes.use("*", async (c, next) => {
-	const origin = c.req.header("Origin");
-	if (origin && origin !== ALLOWED_ORIGIN) {
-		return c.text("Forbidden", 403);
-	}
-	await next();
-});
 
 searchRoutes.get("/", async (c) => {
 	const query = c.req.query("q");
@@ -81,6 +70,64 @@ function getMatchedProducts(
 	return establishment.d.filter((p) => p.n === match.value);
 }
 
+// --- UNIT CONVERSION HELPERS ---
+const unitofmeasures = [
+  { unit: "gram", name: "gram", conversion: 1 },
+  { unit: "gram", name: "gr", conversion: 1 },
+  { unit: "gram", name: "g", conversion: 1 },
+  { unit: "gram", name: "kilogram", conversion: 1000 },
+  { unit: "gram", name: "kilo", conversion: 1000 },
+  { unit: "gram", name: "kg", conversion: 1000 },
+  { unit: "gram", name: "k", conversion: 1000 },
+  { unit: "gram", name: "pond", conversion: 500 },
+  { unit: "milliliter", name: "milliliter", conversion: 1 },
+  { unit: "milliliter", name: "mililiter", conversion: 1 },
+  { unit: "milliliter", name: "ml", conversion: 1 },
+  { unit: "milliliter", name: "liter", conversion: 1000 },
+  { unit: "milliliter", name: "l", conversion: 1000 },
+  { unit: "milliliter", name: "deciliter", conversion: 100 },
+  { unit: "milliliter", name: "dl", conversion: 100 },
+  { unit: "milliliter", name: "centiliter", conversion: 10 },
+  { unit: "milliliter", name: "cl", conversion: 10 },
+];
+
+const unitofmeasurePattern = new RegExp(
+  "([\\d\\.,]+)\\s?(" + unitofmeasures.map(unit => unit.name).join("|") + ")", "i"
+);
+
+function parseAmount(value: string): { amount: number, unit: string } | null {
+  if (value && unitofmeasurePattern.test(value)) {
+    const match = value.match(unitofmeasurePattern);
+    if (!match) return null;
+    const amount = parseFloat(match[1].replace(",", "."));
+    const unitObj = unitofmeasures.find(unit => unit.name === match[2].toLowerCase());
+    if (!unitObj) return null;
+    return { amount: amount * unitObj.conversion, unit: unitObj.unit };
+  }
+  return null;
+}
+
+function getPricePerUnitAndUnitType(price: number, amountStr: string): { price_per_unit: number | null, unit_type: string | null } {
+  const parsed = parseAmount(amountStr);
+  if (!parsed || !price || isNaN(price)) return { price_per_unit: null, unit_type: null };
+  if (parsed.unit === "gram") {
+    return {
+      price_per_unit: Math.round((price / (parsed.amount / 1000)) * 100) / 100, // €/kg
+      unit_type: "kg"
+    };
+  }
+  if (parsed.unit === "milliliter") {
+    return {
+      price_per_unit: Math.round((price / (parsed.amount / 1000)) * 100) / 100, // €/liter
+      unit_type: "liter"
+    };
+  }
+  return {
+    price_per_unit: Math.round(price * 100) / 100, // fallback: price per unit
+    unit_type: "unit"
+  };
+}
+
 // Single Responsibility: Build a result item
 type Market = (typeof ALLOWED_MARKETS)[number];
 type Product = RawProductsData["d"][number];
@@ -90,12 +137,15 @@ function buildResultItem(
 	product: Product,
 	market: Market,
 ): ResultItem {
+	const { price_per_unit, unit_type } = getPricePerUnitAndUnitType(product.p, product.s);
 	return {
 		e: establishment.n,
 		n: product.n,
 		p: product.p,
 		s: product.s,
 		l: market.base_url + product.l,
+		price_per_unit,
+		unit_type,
 	};
 }
 

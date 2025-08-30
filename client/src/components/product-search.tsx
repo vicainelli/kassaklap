@@ -100,17 +100,23 @@ function ResultListItem({ item }: { item: ResultItem }) {
 			target="_blank"
 			rel="noopener noreferrer"
 		>
-			<div className="w-6 h-6">
+			<div className="w-8 h-8">
 				<img
 					alt={`logo ${item.e}`}
 					src={`./${item.e}.png`}
-					width={24}
-					height={24}
+					width={32}
+					height={32}
 				/>
 			</div>
 			<div className="flex-1">
+  			<p>{item.n}</p>
 				<span>
-					{item.n} / €{item.p} / {item.s}
+					 / €{item.p} / {item.s}
+					{item.price_per_unit != null && item.unit_type ? (
+						<span className="p-2 bg-accent rounded-sm">
+							€{item.price_per_unit.toFixed(2)} per {item.unit_type}
+						</span>
+					) : null}
 				</span>
 			</div>
 		</a>
