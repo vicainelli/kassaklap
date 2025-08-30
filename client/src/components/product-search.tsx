@@ -95,30 +95,33 @@ function ResultsList({ results, isLoading, isError, error }: ResultsListProps) {
 function ResultListItem({ item }: { item: ResultItem }) {
 	return (
 		<a
-			className="flex gap-2"
 			href={item.l}
 			target="_blank"
 			rel="noopener noreferrer"
 		>
-			<div className="w-8 h-8">
-				<img
-					alt={`logo ${item.e}`}
-					src={`./${item.e}.png`}
-					width={32}
-					height={32}
-				/>
-			</div>
-			<div className="flex-1">
-  			<p>{item.n}</p>
-				<span>
-					 / €{item.p} / {item.s}
-					{item.price_per_unit != null && item.unit_type ? (
-						<span className="p-2 bg-accent rounded-sm">
-							€{item.price_per_unit.toFixed(2)} per {item.unit_type}
-						</span>
-					) : null}
-				</span>
-			</div>
+		<div
+			className="flex gap-2 bg-card p-2 rounded-sm"
+		>
+		<div className="w-8 h-8">
+			<img
+				alt={`logo ${item.e}`}
+				src={`./${item.e}.png`}
+				width={32}
+				height={32}
+			/>
+		</div>
+		<div className="flex-1">
+  			<p className="mb-2">{item.n}</p>
+			<span>
+				 €{item.p} / {item.s}
+				{item.price_per_unit != null && item.unit_type ? (
+					<span className="p-1 bg-accent rounded-sm">
+						€{item.price_per_unit.toFixed(2)} per {item.unit_type}
+					</span>
+				) : null}
+			</span>
+		</div>
+		</div>
 		</a>
 	);
 }
