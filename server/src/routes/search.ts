@@ -99,8 +99,10 @@ function parseAmount(value: string): { amount: number, unit: string } | null {
   if (value && unitofmeasurePattern.test(value)) {
     const match = value.match(unitofmeasurePattern);
     if (!match) return null;
-    const amount = parseFloat(match[1].replace(",", "."));
-    const unitObj = unitofmeasures.find(unit => unit.name === match[2].toLowerCase());
+    const [, rawAmount = "", rawUnit = ""] = match;
+    if (!rawAmount || !rawUnit) return null;
+    const amount = parseFloat(rawAmount.replace(",", "."));
+    const unitObj = unitofmeasures.find(unit => unit.name === rawUnit.toLowerCase());
     if (!unitObj) return null;
     return { amount: amount * unitObj.conversion, unit: unitObj.unit };
   }
