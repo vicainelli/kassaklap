@@ -14,7 +14,7 @@ searchRoutes.get("/", async (c) => {
 		);
 	}
 
-	const results = await fetchSearchResults(query);
+	const results = fetchSearchResults(query);
 	return c.json(results);
 });
 
