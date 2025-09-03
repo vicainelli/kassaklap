@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Input } from "../components/ui/input";
+import { useConditionalTracking, TRACKING_EVENTS } from "../lib/analytics";
 
 
 export const Route = createFileRoute("/")({
@@ -11,10 +12,22 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
 
+  const { track } = useConditionalTracking();
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 		const formData = new FormData(event.currentTarget);
 		const query = formData.get("search")?.toString() || "";
+
+		// Track search with user consent
+		track({
+			eventName: TRACKING_EVENTS.SEARCH_PRODUCT,
+			properties: {
+				search_query: query,
+				search_length: query.length,
+			},
+		});
+
 		navigate({
 			to: "/search",
 			search: { q: query },
