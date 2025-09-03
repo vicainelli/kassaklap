@@ -94,10 +94,10 @@ export function CookieStatus() {
 			textColor,
 			borderColor,
 			!isVisible ? "opacity-0 translate-x-2" : "opacity-100 translate-x-0"
-		)}>
+		)} data-testid={`cookie-status-${consent}`}>
 			<Cookie className={cn("w-3 h-3", iconColor)} />
 			<Icon className={cn("w-3 h-3", iconColor)} />
-			<span>{text}</span>
+			<span data-testid={`cookie-status-message-${consent}`}>{text}</span>
 		</div>
 	);
 }

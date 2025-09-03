@@ -9,7 +9,7 @@ export function Footer() {
 
 	return (
 		<>
-			<footer className="border-t bg-background/95 backdrop-blur-sm">
+			<footer className="border-t bg-background/95 backdrop-blur-sm" data-testid="footer">
 				<div className="container mx-auto px-4 py-6">
 					<div className="flex flex-col md:flex-row items-center justify-between gap-4">
 						<div className="flex items-center gap-2">
@@ -24,6 +24,7 @@ export function Footer() {
 								size="sm"
 								onClick={openSettings}
 								className="h-8 text-xs"
+								data-testid="footer-cookie-settings-button"
 							>
 								<Cookie className="w-3 h-3 mr-1" />
 								Cookie Settings
@@ -32,6 +33,7 @@ export function Footer() {
 							<a
 								href="/privacy-policy"
 								className="text-xs text-muted-foreground hover:text-primary transition-colors"
+								data-testid="footer-privacy-policy-link"
 							>
 								Privacy Policy
 							</a>
@@ -39,7 +41,8 @@ export function Footer() {
 							<a
 								href="/terms"
 								className="text-xs text-muted-foreground hover:text-primary transition-colors"
-							>
+								data-testid="footer-terms-link"
+			>
 								Terms of Service
 							</a>
 						</div>
