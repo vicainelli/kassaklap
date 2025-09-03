@@ -59,7 +59,7 @@ function RouteComponent() {
 
 			<div className="p-4">
 				<form onSubmit={handleSubmit}>
-					<div className="flex justify-between">
+					<div className="flex justify-between gap-2">
 						<Input
 							type="text"
 							name="search"
@@ -67,7 +67,7 @@ function RouteComponent() {
 							value={q}
 							className="w-full"
 						/>
-						<button type="submit">search</button>
+						<button type="submit">🔍</button>
 					</div>
 				</form>
 			</div>

@@ -16,10 +16,11 @@ function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
 
 function Index() {
 	return (
-		<div className="max-w-xl mx-auto flex flex-col gap-6 items-center justify-center min-h-screen">
+		<div className="mx-auto flex flex-col gap-6 items-center justify-center min-h-screen">
 			<h1 className="text-5xl font-black">kassaklap</h1>
-			<div>
+
 			<form onSubmit={handleSubmit}>
+			<div className="flex justify-between gap-2">
 			<Input
 				type="text"
 				name="search"
@@ -27,9 +28,9 @@ function Index() {
 				value={""}
 				className="w-full"
 			/>
-			<button type="submit">search</button>
-			</form>
+			<button type="submit">🔍</button>
 			</div>
+			</form>
 		</div>
 	);
 }
