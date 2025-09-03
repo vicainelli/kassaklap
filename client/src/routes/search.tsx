@@ -1,17 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { ResultItem } from "shared/dist";
 import { Input } from "../components/ui/input";
 
 const SERVER_URL = import.meta.env.DEV ? "http://localhost:3000/api" : "/api";
 
-function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-	event.preventDefault();
-	const formData = new FormData(event.currentTarget);
-	const query = formData.get("search")?.toString() || "";
-	window.location.href = `/search?q=${encodeURIComponent(query)}`;
-}
+
 
 async function fetchProductResults(query: string): Promise<ResultItem[]> {
 	const res = await fetch(
@@ -37,6 +32,17 @@ export const Route = createFileRoute("/search")({
 
 function RouteComponent() {
 	const { q } = Route.useSearch();
+	const navigate = useNavigate();
+
+	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
+		const formData = new FormData(event.currentTarget);
+		const query = formData.get("search")?.toString() || "";
+		navigate({
+			to: "/search",
+			search: { q: query },
+		});
+	};
 
 	const query = useQuery({
 		queryKey: ["search", q],

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Input } from "../components/ui/input";
 
 
@@ -7,14 +7,20 @@ export const Route = createFileRoute("/")({
 });
 
 
-function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-  event.preventDefault();
-  const formData = new FormData(event.currentTarget);
-  const query = formData.get("search")?.toString() || "";
-  window.location.href = `/search?q=${encodeURIComponent(query)}`;
-}
 
 function Index() {
+  const navigate = useNavigate();
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+		const formData = new FormData(event.currentTarget);
+		const query = formData.get("search")?.toString() || "";
+		navigate({
+			to: "/search",
+			search: { q: query },
+		});
+  }
+
 	return (
 		<div className="mx-auto flex flex-col gap-6 items-center justify-center min-h-screen">
 			<h1 className="text-5xl font-black">kassaklap</h1>
