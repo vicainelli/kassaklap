@@ -48,7 +48,9 @@ function RouteComponent() {
 		<div className="">
 			<header>
 				<div className="flex items-center justify-between p-4 mb-4">
-					<h1 className="text-3xl font-bold">Kassaklap</h1>
+					<h1 className="text-3xl font-bold">
+					<a href="/">Kassaklap</a>
+					</h1>
 					<div>
 						<button type="button">⚙</button>
 					</div>
@@ -71,9 +73,10 @@ function RouteComponent() {
 			</div>
 
 			<div className="p-4">
+			  {query.isLoading && (<ResultListSkeleton /> )}
+
 				{query?.data && (
 					<ResultsList
-						isLoading={query.isLoading}
 						isError={query.isError}
 						error={query.error}
 						results={query.data}
@@ -86,13 +89,11 @@ function RouteComponent() {
 
 type ResultsListProps = {
 	results: ResultItem[] | undefined;
-	isLoading: boolean;
 	isError: boolean;
 	error: unknown;
 };
 
-function ResultsList({ results, isLoading, isError, error }: ResultsListProps) {
-	if (isLoading) return <ResultListSkeleton />;
+function ResultsList({ results, isError, error }: ResultsListProps) {
 	if (isError) return <div>Error: {String(error)}</div>;
 	if (!results || results.length === 0) return <div>No results</div>;
 	return (
