@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { ResultItem } from "shared/dist";
 import { Input } from "../components/ui/input";
+import { useConditionalTracking, TRACKING_EVENTS } from "../lib/analytics";
 
 const SERVER_URL = import.meta.env.DEV ? "http://localhost:3000/api" : "/api";
 
@@ -33,11 +34,22 @@ export const Route = createFileRoute("/search")({
 function RouteComponent() {
 	const { q } = Route.useSearch();
 	const navigate = useNavigate();
+	const { track } = useConditionalTracking();
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const formData = new FormData(event.currentTarget);
 		const query = formData.get("search")?.toString() || "";
+
+		// Track search with user consent
+		track({
+			eventName: TRACKING_EVENTS.SEARCH_PRODUCT,
+			properties: {
+				search_query: query,
+				search_length: query.length,
+			},
+		});
+
 		navigate({
 			to: "/search",
 			search: { q: query },
@@ -54,7 +66,7 @@ function RouteComponent() {
 		<div className="">
 			<header>
 				<div className="flex items-center justify-between p-4 mb-4">
-					<h1 className="text-3xl font-bold">
+					<h1 className="text-3xl font-black">
 					<a href="/">Kassaklap</a>
 					</h1>
 					<div>
@@ -115,8 +127,28 @@ function ResultsList({ results, isError, error }: ResultsListProps) {
 }
 
 function ResultListItem({ item }: { item: ResultItem }) {
+	const { track } = useConditionalTracking();
+
+	const handleClick = () => {
+		// Track product view with user consent
+		track({
+			eventName: TRACKING_EVENTS.VIEW_PRODUCT,
+			properties: {
+				product_name: item.n,
+				product_price: item.p,
+				store: item.e,
+				product_url: item.l,
+			},
+		});
+	};
+
 	return (
-		<a href={item.l} target="_blank" rel="noopener noreferrer">
+		<a
+			href={item.l}
+			target="_blank"
+			rel="noopener noreferrer"
+			onClick={handleClick}
+		>
 			<div className="flex gap-4 bg-card p-4 rounded-sm border-2 border-accent">
 				<div className="w-10 h-10">
 					<img
