@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { z } from "zod";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import type { ResultItem } from "shared/dist";
@@ -33,13 +34,13 @@ export const Route = createFileRoute("/search")({
 
 function RouteComponent() {
 	const { q } = Route.useSearch();
+	const [searchQuery, setSearchQuery] = useState(q || "");
 	const navigate = useNavigate();
 	const { track } = useConditionalTracking();
 
 	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		const formData = new FormData(event.currentTarget);
-		const query = formData.get("search")?.toString() || "";
+		const query = searchQuery;
 
 		// Track search with user consent
 		track({
@@ -63,7 +64,7 @@ function RouteComponent() {
 	});
 
 	return (
-		<div className="">
+	<div className="max-w-5xl mx-auto">
 			<header>
 				<div className="flex items-center justify-between p-4 mb-4">
 					<h1 className="text-3xl font-black">
@@ -82,7 +83,8 @@ function RouteComponent() {
 							type="text"
 							name="search"
 							placeholder="Search products..."
-							value={q}
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
 							className="w-full"
 						/>
 						<button type="submit">🔍</button>
@@ -180,9 +182,8 @@ function ResultListSkeleton() {
 	return (
 		<div className="space-y-4">
 			{items.map((item) => (
-				<div className="bg-accent rounded-md p-4">
+				<div key={item} className="bg-accent rounded-md p-4">
 					<div
-						key={item}
 						className="animate-pulse space-x-4 flex justify-between"
 					>
 						<div className="w-10 h-10 bg-gray-300"></div>

@@ -14,10 +14,11 @@ function Index() {
 
   const { track } = useConditionalTracking();
 
+  const [searchQuery, setSearchQuery] = React.useState("");
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-		const formData = new FormData(event.currentTarget);
-		const query = formData.get("search")?.toString() || "";
+		const query = searchQuery;
 
 		// Track search with user consent
 		track({
@@ -44,7 +45,8 @@ function Index() {
 				type="text"
 				name="search"
 				placeholder="Search products..."
-				value={""}
+				value={searchQuery}
+				onChange={(e) => setSearchQuery(e.target.value)}
 				className="w-full"
 			/>
 			<button type="submit">🔍</button>
