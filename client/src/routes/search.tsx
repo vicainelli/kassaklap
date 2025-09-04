@@ -1,14 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
-import { z } from "zod";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import type { ResultItem } from "shared/dist";
+import { z } from "zod";
 import { Input } from "../components/ui/input";
-import { useConditionalTracking, TRACKING_EVENTS } from "../lib/analytics";
+import { TRACKING_EVENTS, useConditionalTracking } from "../lib/analytics";
 
 const SERVER_URL = import.meta.env.DEV ? "http://localhost:3000/api" : "/api";
-
-
 
 async function fetchProductResults(query: string): Promise<ResultItem[]> {
 	const res = await fetch(
@@ -64,11 +62,11 @@ function RouteComponent() {
 	});
 
 	return (
-	<div className="max-w-5xl mx-auto">
+		<div className="max-w-5xl mx-auto">
 			<header>
 				<div className="flex items-center justify-between p-4 mb-4">
 					<h1 className="text-3xl font-black">
-					<a href="/">Kassaklap</a>
+						<a href="/">Kassaklap</a>
 					</h1>
 					<div>
 						<button type="button">⚙</button>
@@ -93,15 +91,30 @@ function RouteComponent() {
 			</div>
 
 			<div className="p-4">
-			  {query.isLoading && (<ResultListSkeleton /> )}
+				{query.isLoading && <ResultListSkeleton />}
 
-				{query?.data && (
-					<ResultsList
-						isError={query.isError}
-						error={query.error}
-						results={query.data}
-					/>
+				{query.isError && (
+					<div>
+						<div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative flex items-center gap-2">
+							<span className="text-2xl">🚨</span>
+							<div>
+								<strong className="font-bold">
+									Oops! Something went wrong.
+								</strong>
+								<div className="mt-1">
+									<span className="block">
+										We couldn't fetch your search results.
+									</span>
+									<span className="block text-xs text-red-600">
+										Error details: {String(query.error)}
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
 				)}
+
+				{query?.data && <ResultsList results={query.data} />}
 			</div>
 		</div>
 	);
@@ -109,12 +122,9 @@ function RouteComponent() {
 
 type ResultsListProps = {
 	results: ResultItem[] | undefined;
-	isError: boolean;
-	error: unknown;
 };
 
-function ResultsList({ results, isError, error }: ResultsListProps) {
-	if (isError) return <div>Error: {String(error)}</div>;
+function ResultsList({ results }: ResultsListProps) {
 	if (!results || results.length === 0) return <div>No results</div>;
 	return (
 		<ul className="flex flex-col gap-4">
@@ -183,9 +193,7 @@ function ResultListSkeleton() {
 		<div className="space-y-4">
 			{items.map((item) => (
 				<div key={item} className="bg-accent rounded-md p-4">
-					<div
-						className="animate-pulse space-x-4 flex justify-between"
-					>
+					<div className="animate-pulse space-x-4 flex justify-between">
 						<div className="w-10 h-10 bg-gray-300"></div>
 						<div className="flex-1">
 							<div className="w-[75%] h-4 bg-gray-300"></div>
