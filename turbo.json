@@ -15,7 +15,6 @@
 				"vite.config.ts",
 				"package.json",
 				"pnpm-lock.yaml",
-				"bun.lock",
 				"eslint.config.js",
 				"index.html"
 			],
@@ -106,7 +105,6 @@
 		"turbo.json",
 		"package.json",
 		"pnpm-lock.yaml",
-		"bun.lock",
 		"tsconfig.json"
 	],
 	"globalEnv": [
