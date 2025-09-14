@@ -43,8 +43,8 @@ Note: This review should comply with the project's established coding standards 
 
 ## Constraints
 
-* **IMPORTANT**: Use `output.txt` to get the diff for code review, if the files not exists you can run `git --no-pager diff --no-prefix --unified=100000 --minimal $(git merge-base main --fork-point)...head > output.txt` to generate the file;
-* Use the `.github/conventional-comments.md` as reference to write the comments and suggestions
+* **IMPORTANT**: Use `output.txt` to get the diff for code review, if the files not exists you can run `git --no-pager diff --no-prefix --unified=100000 --minimal $(git merge-base main --fork-point)...head -- . ':!*.lock' ':!**/*.lock' ':!*.lockb' ':!**/*.lockb' ':!package-lock.json' ':!**/package-lock.json' > output.txt` to generate the file, if the file already exists you can skip this step;
+* fetch https://conventionalcomments.org/ as reference to write the comments and suggestions
 * In the provided git diff, if the line start with `+` or `-`, it means that the line is added or removed. If the line starts with a space, it means that the line is unchanged. If the line starts with `@@`, it means that the line is a hunk header.
 
 * Avoid overwhelming the developer with too many suggestions at once.
@@ -61,8 +61,7 @@ Note: This review should comply with the project's established coding standards 
 
     # Suggestions
 
-    ## ${code_review_emoji} ${Summary of the suggestion, include necessary context to understand suggestion}
-    * **Priority**: ${priority: (🔥/⚠️/🟡/🟢)}
+    ## ${summary of the suggestion, include necessary context to understand suggestion} (all lowercase)
     * **File**: ${relative/path/to/file}
     * **Details**: ...
     * **Example** (if applicable): ...
@@ -73,11 +72,6 @@ Note: This review should comply with the project's established coding standards 
 
     # Summary
     ```
-* Use the following emojis to indicate the priority of the suggestions:
-    * 🔥 Critical
-    * ⚠️ High
-    * 🟡 Medium
-    * 🟢 Low
 * Each suggestion should be prefixed with an emoji to indicate the type of suggestion:
 - `**praise**`
 - `**nitpick**`
@@ -96,20 +90,6 @@ Note: This review should comply with the project's established coding standards 
 ### Use Code Review Emojis
 
 Use code review emojis. Give the reviewee added context and clarity to follow up on code review. For example, knowing whether something really requires action (🔧), highlighting nit-picky comments (⛏), flagging out of scope items for follow-up (📌) and clarifying items that don’t necessarily require action but are worth saying ( 👍, 📝, 🤔 )
-
-#### Emoji Legend
-
-|       |      `:code:`       | Meaning                                                                                                                                                                                                                            |
-| :---: | :-----------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|   🔧   |     `:wrench:`      | Use when this needs to be changed. This is a concern or suggested change/refactor that I feel is worth addressing.                                                                                                                 |
-|   ❓   |    `:question:`     | Use when you have a question. This should be a fully formed question with sufficient information and context that requires a response.                                                                                             |
-|   ⛏   |      `:pick:`       | This is a nitpick. This does not require any changes and is often better left unsaid. This may include stylistic, formatting, or organization suggestions and should likely be prevented/enforced by linting if they really matter |
-|   ♻️   |     `:recycle:`     | Suggestion for refactoring. Should include enough context to be actionable and not be considered a nitpick.                                                                                                                        |
-|   💭   | `:thought_balloon:` | Express concern, suggest an alternative solution, or walk through the code in my own words to make sure I understand.                                                                                                              |
-|   👍   |       `:+1:`        | Let the author know that you really liked something! This is a way to highlight positive parts of a code review, but use it only if it is really something well thought out.                                                       |
-|   📝   |      `:memo:`       | This is an explanatory note, fun fact, or relevant commentary that does not require any action.                                                                                                                                    |
-|   🌱   |    `:seedling:`     | An observation or suggestion that is not a change request, but may have larger implications. Generally something to keep in mind for the future.
-
 
 ## Use commit labels
 
