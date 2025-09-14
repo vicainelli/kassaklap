@@ -23,7 +23,8 @@
 		"server": "workspace:*",
 		"shared": "workspace:*",
 		"tailwind-merge": "^3.3.1",
-		"tailwindcss": "^4.1.12"
+		"tailwindcss": "^4.1.12",
+		"zod": "^4.1.8"
 	},
 	"devDependencies": {
 		"@tanstack/router-plugin": "^1.131.28",
