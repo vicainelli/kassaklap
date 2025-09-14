@@ -134,8 +134,10 @@ export function getPricePerUnitAndUnitType(price: number, amountStr: string): { 
   let unit: string | null = null;
 
   if (multiPackMatch) {
-    const count = parseFloat(multiPackMatch[1].replace(",", "."));
-    const amount = parseFloat(multiPackMatch[2].replace(",", "."));
+    const countStr = typeof multiPackMatch[1] !== "undefined" ? multiPackMatch[1] : "";
+    const amountStrInner = typeof multiPackMatch[2] !== "undefined" ? multiPackMatch[2] : "";
+    const count = parseFloat(countStr.replace(",", "."));
+    const amount = parseFloat(amountStrInner.replace(",", "."));
     unit = multiPackMatch[3]?.toLowerCase() ?? null;
     totalAmount = !isNaN(count) && !isNaN(amount) ? count * amount : null;
   } else {
