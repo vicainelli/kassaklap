@@ -5,19 +5,20 @@ kassaklap.nl
 To install dependencies:
 
 ```bash
-bun install
+pnpm install
 ```
 
 To start a development server:
 
 ```bash
-bun dev
+pnpm dev
 ```
 
 To run for production:
 
 ```bash
-bun start
+pnpm start
 ```
 
-This project was created using `bun init` in bun v1.2.19. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.
+This project was migrated from Bun to pnpm for improved compatibility and workspace management.
+

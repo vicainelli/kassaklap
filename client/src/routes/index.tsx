@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { Input } from "../components/ui/input";
 import { useConditionalTracking, TRACKING_EVENTS } from "../lib/analytics";
 
@@ -14,7 +15,7 @@ function Index() {
 
   const { track } = useConditionalTracking();
 
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -36,8 +37,8 @@ function Index() {
   }
 
 	return (
-		<div className="mx-auto flex flex-col gap-6 items-center justify-center min-h-screen">
-			<h1 className="text-5xl font-black">kassaklap</h1>
+		<div className="flex flex-col gap-8 mx-auto max-w-3xl">
+			<h1 className="text-5xl font-black text-center">kassaklap</h1>
 
 			<form onSubmit={handleSubmit}>
 			<div className="flex justify-between gap-2">

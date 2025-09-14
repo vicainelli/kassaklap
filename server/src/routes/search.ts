@@ -41,6 +41,20 @@ const ALLOWED_MARKETS = [
 	},
 ];
 
+// const MARKETS = [
+// 	"ah",
+// 	"aldi",
+// 	"coop",
+// 	"dekamarkt",
+// 	"dirk",
+// 	"hoogvliet",
+// 	"jumbo",
+// 	"picnic",
+// 	"plus",
+// 	"spar",
+// 	"vomar"
+// ]
+
 const FUSE_OPTIONS: IFuseOptions<RawProductsData> = {
 	keys: ["d.n"], // search within product names
 	includeScore: true,
@@ -109,18 +123,45 @@ function parseAmount(value: string): { amount: number, unit: string } | null {
   return null;
 }
 
-function getPricePerUnitAndUnitType(price: number, amountStr: string): { price_per_unit: number | null, unit_type: string | null } {
-  const parsed = parseAmount(amountStr);
-  if (!parsed || !price || isNaN(price)) return { price_per_unit: null, unit_type: null };
-  if (parsed.unit === "gram") {
+
+export function getPricePerUnitAndUnitType(price: number, amountStr: string): { price_per_unit: number | null, unit_type: string | null } {
+  if (!amountStr || !price || isNaN(price)) return { price_per_unit: null, unit_type: null };
+
+  // Handle multi-pack strings like "6 x 0,33 l" or "2 x 90 gram"
+  // Extract all numbers and units, then multiply the numbers and use the last unit
+  const multiPackMatch = amountStr.match(/([\d.,]+)\s*x\s*([\d.,]+)\s*([a-zA-Z]+)/i);
+  let totalAmount: number | null = null;
+  let unit: string | null = null;
+
+  if (multiPackMatch) {
+    const count = parseFloat(multiPackMatch[1].replace(",", "."));
+    const amount = parseFloat(multiPackMatch[2].replace(",", "."));
+    unit = multiPackMatch[3]?.toLowerCase() ?? null;
+    totalAmount = !isNaN(count) && !isNaN(amount) ? count * amount : null;
+  } else {
+    // fallback to single amount parsing
+    const parsed = parseAmount(amountStr);
+    if (!parsed) return { price_per_unit: null, unit_type: null };
+    totalAmount = parsed.amount;
+    unit = parsed.unit;
+  }
+
+  if (!unit || totalAmount === null || isNaN(totalAmount)) {
+    return { price_per_unit: null, unit_type: null };
+  }
+
+  if (unit === "gram") {
     return {
-      price_per_unit: Math.round((price / (parsed.amount / 1000)) * 100) / 100, // €/kg
+      price_per_unit: Math.round((price / (totalAmount / 1000)) * 100) / 100, // €/kg
       unit_type: "kg"
     };
   }
-  if (parsed.unit === "milliliter") {
+  if (unit === "milliliter" || unit === "liter" || unit === "l") {
+    // If unit is "l" or "liter", treat as liters; if "milliliter", convert to liters
+    let liters = totalAmount;
+    if (unit === "milliliter") liters = totalAmount / 1000;
     return {
-      price_per_unit: Math.round((price / (parsed.amount / 1000)) * 100) / 100, // €/liter
+      price_per_unit: Math.round((price / liters) * 100) / 100, // €/liter
       unit_type: "liter"
     };
   }

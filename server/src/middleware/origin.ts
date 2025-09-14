@@ -2,11 +2,11 @@ import type { Next, Context} from "hono";
 const ALLOWED_ORIGINS = ["https://kassaklap.nl"];
 const allowedOriginRegex = /^https?:\/\/[\w-]+-kassaklap\.vicainelli-cloudflare\.workers\.dev$/;
 
-// Use Bun.env for environment detection
+// Use process.env for environment detection
 function isDevelopment() {
 	return (
-		typeof Bun !== "undefined" &&
-		(Bun.env.NODE_ENV === "development" || Bun.env.NODE_ENV === "test")
+		typeof process !== "undefined" &&
+		(process.env.NODE_ENV === "development" || process.env.NODE_ENV === "test")
 	);
 }
 

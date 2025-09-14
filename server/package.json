@@ -5,7 +5,9 @@
 	"types": "dist/index.d.ts",
 	"scripts": {
 		"build": "tsc",
-		"dev": "bun --watch run src/index.ts && tsc --watch"
+		"dev": "tsx watch src/index.ts",
+		"start": "ts-node --loader ts-node/esm src/index.ts",
+		"test": "vitest"
 	},
 	"dependencies": {
 		"fuse.js": "^7.1.0",
@@ -14,6 +16,7 @@
 		"shared": "workspace:*"
 	},
 	"devDependencies": {
-		"@types/bun": "latest"
+		"ts-node": "^10.9.2",
+		"typescript": "^5.9.2"
 	}
 }

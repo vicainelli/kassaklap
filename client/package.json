@@ -4,9 +4,9 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "bunx --bun vite",
-		"build": "tsc -b && bunx --bun vite build",
-		"preview": "bunx --bun vite preview"
+		"dev": "pnpm vite",
+		"build": "tsc -b && pnpm vite build",
+		"preview": "pnpm vite preview"
 	},
 	"dependencies": {
 		"@radix-ui/react-slot": "^1.2.3",

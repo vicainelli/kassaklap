@@ -1,9 +1,9 @@
 {
 	"name": "kassaklap",
 	"version": "0.1.0",
-	"description": "A monorepo template built with Bun, Hono, Vite, and React",
+	"description": "A monorepo template built with Hono, Vite, and React",
 	"author": "Vinicius Cainelli",
-	"packageManager": "bun@1.2.21",
+	"packageManager": "pnpm@8.15.4",
 	"workspaces": [
 		"./server",
 		"./client",
@@ -12,20 +12,20 @@
 	"scripts": {
 		"dev": "turbo dev",
 		"dev:client": "turbo dev --filter=client",
-		"dev:server": "turbo dev --filter=server",
+		"dev:server": "pnpm --filter server dev",
 		"build": "turbo build",
 		"build:client": "turbo build --filter=client",
 		"build:server": "turbo build --filter=server",
 		"lint": "biome lint .",
 		"lint:fix": "biome lint . --write",
 		"type-check": "turbo type-check",
-		"test": "turbo test",
+		"test": "vitest",
+		"dev:test": "vitest --watch",
 		"postinstall": "turbo build --filter=shared --filter=server",
 		"format": "biome format . --write",
 		"deploy": "turbo build && wrangler deploy --minify"
 	},
 	"keywords": [
-		"bun",
 		"hono",
 		"react",
 		"vite",
@@ -33,16 +33,17 @@
 		"turbo"
 	],
 	"devDependencies": {
-		"@biomejs/biome": "^2.2.2",
-		"@cloudflare/workers-types": "^4.20250828.0",
-		"bun-types": "latest",
+		"@biomejs/biome": "^2.2.4",
+		"@cloudflare/workers-types": "^4.20250913.0",
 		"turbo": "^2.5.6",
-		"wrangler": "^4.33.0"
+		"wrangler": "^4.36.0",
+		"vitest": "^3.2.4",
+		"@vitest/ui": "^3.2.4"
 	},
 	"peerDependencies": {
 		"typescript": "^5.7.3"
 	},
 	"dependencies": {
-		"hono": "^4.9.4"
+		"hono": "^4.9.7"
 	}
 }
