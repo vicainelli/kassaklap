@@ -111,3 +111,19 @@ export function trackError(error: Error, context?: Record<string, any>) {
 		});
 	}
 }
+
+/**
+ * Utility function for manually capturing exceptions
+ * Use this for exceptions in try-catch blocks or custom error handling logic
+ * Integrates with PostHog's exception tracking and error boundaries
+ */
+export function captureException(error: Error, additionalProperties?: Record<string, any>) {
+	const posthog = (window as any).posthog;
+	
+	if (posthog && posthog.captureException) {
+		posthog.captureException(error, additionalProperties);
+	} else if (posthog) {
+		// Fallback for older SDK versions
+		trackError(error, additionalProperties);
+	}
+}

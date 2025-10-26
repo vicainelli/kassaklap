@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { PostHogProvider } from "posthog-js/react";
+import { PostHogProvider, PostHogErrorBoundary } from "posthog-js/react";
 import "./index.css";
 
 // Dynamic dark mode: sync .dark class on <body> with system preferences
@@ -59,10 +59,24 @@ if (!rootElement.innerHTML) {
 					debug: import.meta.env.MODE === "development",
 				}}
 			>
-				<QueryClientProvider client={queryClient}>
-					<RouterProvider router={router} />
-				</QueryClientProvider>
+				<PostHogErrorBoundary fallback={<ErrorFallback />}>
+					<QueryClientProvider client={queryClient}>
+						<RouterProvider router={router} />
+					</QueryClientProvider>
+				</PostHogErrorBoundary>
 			</PostHogProvider>
 		</StrictMode>,
+	);
+}
+
+/**
+ * Fallback component shown when a rendering error occurs
+ */
+function ErrorFallback() {
+	return (
+		<div style={{ padding: "20px", textAlign: "center" }}>
+			<h1>Something went wrong</h1>
+			<p>We're sorry for the inconvenience. Please try refreshing the page.</p>
+		</div>
 	);
 }
