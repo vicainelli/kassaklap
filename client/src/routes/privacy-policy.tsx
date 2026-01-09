@@ -23,7 +23,7 @@ function PrivacyPolicyPage() {
 
 						<div className="text-sm text-muted-foreground mb-6 space-y-1">
 							<p><strong>Last updated:</strong> September 2025</p>
-							<p><strong>Contact:</strong> privacy@kassaklap.com</p>
+							<p><strong>Contact:</strong> kassaklap@gmail.com</p>
 						</div>
 					</section>
 
@@ -215,7 +215,7 @@ function PrivacyPolicyPage() {
 							If you have questions about this privacy policy or your personal data:
 						</p>
 						<div className="space-y-2 text-sm">
-							<p><strong>Email:</strong> privacy@kassaklap.com</p>
+							<p><strong>Email:</strong> kassaklap@gmail.com</p>
 							<p><strong>Subject Line:</strong> "Privacy Policy Inquiry"</p>
 							<p><strong>Response Time:</strong> We aim to respond within 72 hours</p>
 						</div>
@@ -254,7 +254,7 @@ function PrivacyPolicyPage() {
 							<Button
 								variant="outline"
 								size="sm"
-								onClick={() => window.open('mailto:privacy@kassaklap.com?subject=Privacy Policy Inquiry', '_blank')}
+								onClick={() => window.open('mailto:kassaklap@gmail.com?subject=Privacy Policy Inquiry', '_blank')}
 								data-testid="privacy-policy-contact-email"
 							>
 								<Mail className="w-4 h-4 mr-2" />
