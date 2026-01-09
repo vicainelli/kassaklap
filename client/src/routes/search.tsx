@@ -1,12 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react"
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 import type { ResultItem } from "shared/dist";
 import { z } from "zod";
-import { Input } from "../components/ui/input";
+import { SearchForm } from "../components/search-form";
 import { TRACKING_EVENTS, useConditionalTracking } from "../lib/analytics";
-import { Button } from "@/components/ui/button";
 
 const SERVER_URL = import.meta.env.DEV ? "http://localhost:3000/api" : "/api";
 
@@ -34,23 +31,9 @@ export const Route = createFileRoute("/search")({
 
 function RouteComponent() {
 	const { q } = Route.useSearch();
-	const [searchQuery, setSearchQuery] = useState(q || "");
 	const navigate = useNavigate();
-	const { track } = useConditionalTracking();
 
-	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-		const query = searchQuery;
-
-		// Track search with user consent
-		track({
-			eventName: TRACKING_EVENTS.SEARCH_PRODUCT,
-			properties: {
-				search_query: query,
-				search_length: query.length,
-			},
-		});
-
+	const handleSubmit = (query: string) => {
 		navigate({
 			to: "/search",
 			search: { q: query },
@@ -77,26 +60,7 @@ function RouteComponent() {
 			</header>
 
 			<div className="p-4" data-testid="search-form">
-				<form onSubmit={handleSubmit}>
-					<div className="relative">
-						<Input
-							type="text"
-							name="search"
-							placeholder="Search products..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							className="pr-12 h-12 text-base"
-						/>
-						<Button
-							size="icon"
-							type="submit"
-							variant="ghost"
-							className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
-						>
-							<Search className="h-5 w-5" />
-						</Button>
-					</div>
-				</form>
+				<SearchForm initialQuery={q || ""} onSubmit={handleSubmit} />
 			</div>
 
 			<div className="p-4">
