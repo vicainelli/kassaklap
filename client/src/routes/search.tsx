@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
+import { Search } from "lucide-react"
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import type { ResultItem } from "shared/dist";
 import { z } from "zod";
 import { Input } from "../components/ui/input";
 import { TRACKING_EVENTS, useConditionalTracking } from "../lib/analytics";
+import { Button } from "@/components/ui/button";
 
 const SERVER_URL = import.meta.env.DEV ? "http://localhost:3000/api" : "/api";
 
@@ -74,18 +76,25 @@ function RouteComponent() {
 				</div>
 			</header>
 
-			<div className="p-4">
+			<div className="p-4" data-testid="search-form">
 				<form onSubmit={handleSubmit}>
-					<div className="flex justify-between gap-2">
+					<div className="relative">
 						<Input
 							type="text"
 							name="search"
 							placeholder="Search products..."
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full"
+							className="pr-12 h-12 text-base"
 						/>
-						<button type="submit">🔍</button>
+						<Button
+							size="icon"
+							type="submit"
+							variant="ghost"
+							className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8"
+						>
+							<Search className="h-5 w-5" />
+						</Button>
 					</div>
 				</form>
 			</div>
