@@ -113,9 +113,7 @@ export function SearchForm({ initialQuery = "", onSubmit }: SearchFormProps) {
 				event.preventDefault();
 				setFocusedIndex((prev) => {
 					if (prev < suggestions.length - 1) {
-						const newIndex = prev + 1;
-						setSearchQuery(suggestions[newIndex]);
-						return newIndex;
+						return prev + 1;
 					}
 					return prev;
 				});
@@ -125,14 +123,10 @@ export function SearchForm({ initialQuery = "", onSubmit }: SearchFormProps) {
 				event.preventDefault();
 				setFocusedIndex((prev) => {
 					if (prev > 0) {
-						const newIndex = prev - 1;
-						setSearchQuery(suggestions[newIndex]);
-						return newIndex;
+						return prev - 1;
 					} else if (prev === -1) {
 						// Wrap to the last item
-						const newIndex = suggestions.length - 1;
-						setSearchQuery(suggestions[newIndex]);
-						return newIndex;
+						return suggestions.length - 1;
 					}
 					return prev;
 				});
@@ -141,15 +135,17 @@ export function SearchForm({ initialQuery = "", onSubmit }: SearchFormProps) {
 			case "Enter":
 				if (focusedIndex >= 0) {
 					event.preventDefault();
+					const selectedSuggestion = suggestions[focusedIndex];
+					setSearchQuery(selectedSuggestion);
 					setShowSuggestions(false);
 					track({
 						eventName: TRACKING_EVENTS.SEARCH_PRODUCT,
 						properties: {
-							search_query: searchQuery,
-							search_length: searchQuery.length,
+							search_query: selectedSuggestion,
+							search_length: selectedSuggestion.length,
 						},
 					});
-					onSubmit?.(searchQuery);
+					onSubmit?.(selectedSuggestion);
 					setFocusedIndex(-1);
 				}
 				break;
